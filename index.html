@@ -381,11 +381,12 @@
     <h1>Ask a question.<br><em>Get a research doc.</em></h1>
     <p class="hero-sub">10 agents search in parallel — docs, community, internal intel, competitive, quantitative data, market landscape — then synthesize into a Google Doc. Questions are decomposed for targeted dispatch. Gaps and conflicts trigger follow-up research.</p>
     <div style="display:flex; flex-direction:column; gap:1.2rem; align-items:center; width:100%; max-width:680px; margin:0 auto;">
-        <div style="font-size:0.72rem; color:var(--text-muted);">0. Refresh marketplace listings</div>
+        <div style="font-size:0.72rem; color:var(--text-muted);">0. One-time setup (clone the marketplace repo)</div>
         <div class="hero-install" onclick="copyClone(this)" style="width:100%; justify-content:space-between;">
-            <span style="text-align:left;"><span class="ck">isaac plugin update</span></span>
+            <span style="text-align:left; word-break:break-all;"><span class="ck">git clone</span> https://github.com/databricks-eng/plugin-marketplace.git ~/plugin-marketplace</span>
             <span style="color:var(--accent); font-size:0.75rem; font-weight:600; flex-shrink:0; margin-left:1rem;">Copy</span>
         </div>
+        <div style="font-size:0.65rem; color:var(--text-muted); margin-top:-0.5rem;">Already have it? Run <code style="font-family:var(--mono); color:var(--accent); font-size:0.65rem;">isaac plugin update</code> instead</div>
         <div style="font-size:0.72rem; color:var(--text-muted);">1. Install the plugin</div>
         <div class="hero-install" onclick="copyInstall(this)" style="width:100%; justify-content:space-between;">
             <span style="text-align:left;"><span class="ck">isaac plugin add</span> db-bricksearch@experimental</span>
@@ -505,7 +506,7 @@
     }
 
     function copyClone(el) {
-        const text = 'isaac plugin update';
+        const text = 'git clone https://github.com/databricks-eng/plugin-marketplace.git ~/plugin-marketplace';
         const label = el.querySelector('span:last-child');
         navigator.clipboard.writeText(text).then(() => {
             label.textContent = 'Copied!';
