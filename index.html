@@ -383,7 +383,7 @@
     <div style="display:flex; flex-direction:column; gap:1.2rem; align-items:center; width:100%; max-width:680px; margin:0 auto;">
         <div style="font-size:0.72rem; color:var(--text-muted);">1. Open terminal</div>
         <div class="hero-install" onclick="copyInstall(this)" style="width:100%; justify-content:space-between;">
-            <span style="text-align:left;"><span class="ck">isaac plugin add</span> db-bricksearch@experimental</span>
+            <span style="text-align:left;"><span class="ck">isaac plugin add</span> db-bricksearch@experimental-plugin-marketplace</span>
             <span style="color:var(--accent); font-size:0.75rem; font-weight:600; flex-shrink:0; margin-left:1rem;">Copy</span>
         </div>
         <div style="font-size:0.72rem; color:var(--text-muted);">2. Start a new <strong style="color:var(--text);">isaac</strong> session, then paste:</div>
@@ -500,7 +500,7 @@
     }
 
     function copyInstall(el) {
-        const text = 'isaac plugin add db-bricksearch@experimental';
+        const text = 'isaac plugin add db-bricksearch@experimental-plugin-marketplace';
         const label = el.querySelector('span:last-child');
         navigator.clipboard.writeText(text).then(() => {
             label.textContent = 'Copied!';
