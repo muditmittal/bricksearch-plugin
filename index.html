@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bricksearch — Databricks</title>
+    <style>
+        :root {
+            --bg:            #07070e;
+            --bg-subtle:     #0d0d1a;
+            --card:          #0f0f1c;
+            --card-hover:    #151528;
+            --accent:        #ff6b35;
+            --accent-glow:   rgba(255, 107, 53, 0.07);
+            --accent-dim:    rgba(255, 107, 53, 0.12);
+            --accent-border: rgba(255, 107, 53, 0.28);
+            --text:          #ddddf0;
+            --text-muted:    #7a7a96;
+            --text-dim:      #7a7a96;
+            --border:        #191926;
+            --border-bright: #232338;
+            --code-bg:       #09090f;
+            --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 2.5rem;
+        }
+
+        section { padding: 4.5rem 0; }
+        section + section { border-top: 1px solid var(--border); }
+
+        .section-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent);
+            margin-bottom: 0.55rem;
+        }
+
+        h2 {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            color: #fff;
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-desc {
+            font-size: 0.93rem;
+            color: var(--text-muted);
+            max-width: 560px;
+            line-height: 1.75;
+            margin-bottom: 2.5rem;
+        }
+
+        /* ─── Hero ────────────────────────────────────────── */
+        .hero {
+            padding: 6rem 0 4rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -120px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 500px;
+            background: radial-gradient(ellipse at center, rgba(255, 107, 53, 0.06) 0%, transparent 65%);
+            pointer-events: none;
+        }
+
+        /* ─── Spinning seal ──────────────────────────── */
+        .seal-wrap {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .seal {
+            width: 180px;
+            height: 180px;
+        }
+
+        .seal svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        .seal-text-ring {
+            animation: spin 24s linear infinite;
+            transform-origin: 110px 110px;
+            transform-box: view-box;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.2rem, 5vw, 3.2rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            color: #fff;
+            margin-bottom: 1.2rem;
+        }
+
+        .hero h1 em {
+            font-style: normal;
+            background: linear-gradient(125deg, #ff6b35 20%, #ff9c6c 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-sub {
+            font-size: 1rem;
+            color: var(--text-muted);
+            max-width: 520px;
+            margin: 0 auto 2.2rem;
+            line-height: 1.75;
+        }
+
+        .hero-install {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: var(--code-bg);
+            border: 1px solid var(--border-bright);
+            border-radius: 8px;
+            padding: 0.7rem 1.2rem;
+            font-family: var(--mono);
+            font-size: 0.82rem;
+            color: #c5cae9;
+            cursor: pointer;
+            transition: border-color 0.18s;
+        }
+        .hero-install:hover { border-color: var(--accent-border); }
+        .hero-install .ck { color: var(--accent); }
+
+        .hero-note {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-top: 0.8rem;
+        }
+
+        /* ─── Agent table ────────────────────────────────── */
+        .agent-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        .agent-table th {
+            text-align: left;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--accent);
+            padding: 0.7rem 1rem;
+            border-bottom: 1px solid var(--border-bright);
+        }
+
+        .agent-table td {
+            padding: 0.65rem 1rem;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        .agent-table tr:last-child td { border-bottom: none; }
+        .agent-table tr:hover td { background: var(--card); }
+
+        .agent-table td:first-child {
+            color: #fff;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .agent-table td:nth-child(2) { color: var(--text); }
+        .agent-table td:nth-child(3) {
+            color: var(--text-dim);
+            font-style: italic;
+            font-size: 0.78rem;
+        }
+
+        .table-wrap {
+            border: 1px solid var(--border-bright);
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--bg-subtle);
+        }
+
+        /* ─── Synthesis ──────────────────────────────────── */
+        .synth-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .synth-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.4rem;
+            transition: border-color 0.18s;
+        }
+        .synth-card:hover { border-color: var(--accent-border); }
+
+        .synth-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.4rem;
+        }
+        .synth-desc {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            line-height: 1.65;
+        }
+
+        /* ─── Trust hierarchy ────────────────────────────── */
+        .trust {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border-bright);
+            border-radius: 12px;
+            overflow: hidden;
+            max-width: 100%;
+        }
+
+        .trust-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.6rem 1.2rem;
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+        }
+        .trust-row:last-child { border-bottom: none; }
+
+        .trust-rank {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--accent-dim);
+            border: 1px solid var(--accent-border);
+            color: var(--accent);
+            font-size: 0.65rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .trust-source { font-size: 0.8rem; font-weight: 500; color: var(--text); flex: 1; }
+        .trust-why { font-size: 0.7rem; color: var(--text-muted); text-align: right; }
+
+        /* ─── Output ─────────────────────────────────────── */
+        .output-desc {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 2rem;
+            max-width: 560px;
+        }
+
+        .examples {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .example-link {
+            flex: 1;
+            min-width: 260px;
+            display: block;
+            padding: 1.1rem 1.3rem;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            text-decoration: none;
+            transition: border-color 0.18s;
+        }
+        .example-link:hover { border-color: var(--accent-border); }
+
+        .example-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.25rem;
+        }
+        .example-desc {
+            font-size: 0.73rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* ─── Footer ─────────────────────────────────────── */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 2rem 0;
+            text-align: center;
+        }
+        footer p { font-size: 0.75rem; color: var(--text-dim); }
+        footer a { color: var(--accent); text-decoration: none; }
+
+        /* ─── Responsive ─────────────────────────────────── */
+        @media (max-width: 700px) {
+            .synth-grid { grid-template-columns: 1fr; }
+            .agent-table td:nth-child(3) { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ── Hero ──────────────────────────────────────────────────────── -->
+<div class="container">
+<section class="hero">
+    <div class="seal-wrap">
+        <div class="seal">
+            <svg width="220" height="220" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g class="seal-text-ring">
+                    <path d="M125.779 34.5418L120.697 34.0135L120.483 30.7866L116.722 30.3956L115.848 33.5095L110.782 32.9828L117.31 10.8359L123.931 11.5242L125.779 34.5418ZM120.125 25.6125L119.735 19.6967L118.152 25.4073L120.125 25.6125Z" fill="#FF3621"/>
+                    <path d="M147.024 22.8939L142.471 21.381L136.927 38.062L132.064 36.4456L137.608 19.7646L133.056 18.2517L134.672 13.3883L148.64 18.0305L147.024 22.8939Z" fill="#FF3621"/>
+                    <path d="M156.071 48.0407L151.684 45.4212L152.849 42.4041L149.602 40.4656L147.499 42.9219L143.125 40.3105L158.373 22.9728L164.088 26.3853L156.071 48.0407ZM154.703 37.5607L156.841 32.0307L153 36.5434L154.703 37.5607Z" fill="#FF3621"/>
+                    <path d="M170.322 56.2813L165.23 56.4189L158.081 49.6752L173.659 33.1599L180.808 39.9036L180.945 44.5641L176.903 48.8492L173.832 48.9389L173.924 52.4622L170.322 56.2813ZM173.443 45.0485L175.962 42.3774L173.871 40.4046L171.351 43.0757L173.443 45.0485ZM167.396 51.4591L169.926 48.7766L167.835 46.8039L165.304 49.4864L167.396 51.4591Z" fill="#FF3621"/>
+                    <path d="M177.878 73.0914L175.036 68.8268L182.343 63.9569L180.749 61.5645L173.442 66.4344L170.6 62.1697L189.492 49.5791L194.942 57.7574L194.027 62.3292L189.125 65.596L186.113 64.9932L185.511 68.0049L177.878 73.0914ZM186.608 61.1147L189.664 59.0783L188.069 56.6859L185.014 58.7223L186.608 61.1147Z" fill="#FF3621"/>
+                    <path d="M181.546 81.3555L179.464 76.6723L200.21 67.4507L202.292 72.1339L181.546 81.3555Z" fill="#FF3621"/>
+                    <path d="M189.543 96.8393L185.553 94.4488L183.949 88.1174L186.321 84.1159L201.953 80.1576L205.958 82.5443L207.561 88.8757L205.174 92.881L200.297 94.1161L199.039 89.1479L202.144 88.3616L201.438 85.5746L189.336 88.6392L190.042 91.4262L193.147 90.6399L194.405 95.6081L189.543 96.8393Z" fill="#FF3621"/>
+                    <path d="M187.229 115.063L187.113 109.924L195.217 106.818L187.047 107.003L186.931 101.879L209.629 101.367L209.744 106.491L201.559 106.675L209.81 109.412L209.926 114.551L198.478 110.761L187.229 115.063Z" fill="#FF3621"/>
+                    <path d="M187.431 132.797L184.878 128.909L186.189 122.51L190.066 119.939L193.418 120.626L192.389 125.647L190.812 125.324L190.235 128.14L193.848 128.881L194.792 124.273L198.683 121.705L205.862 123.176L208.43 127.068L207.119 133.466L203.227 136.034L199.875 135.347L200.904 130.327L202.465 130.647L203.043 127.83L199.445 127.093L198.501 131.7L194.61 134.268L187.431 132.797Z" fill="#FF3621"/>
+                    <path d="M188.419 151.265C189.276 151.743 189.742 152.308 189.818 152.961C189.912 153.625 189.771 154.291 189.397 154.962C189.033 155.614 188.545 156.074 187.931 156.342C187.335 156.621 186.609 156.521 185.752 156.043C184.933 155.586 184.467 155.02 184.354 154.346C184.26 153.683 184.395 153.026 184.759 152.374C185.133 151.703 185.627 151.233 186.241 150.965C186.873 150.707 187.599 150.807 188.419 151.265Z" fill="#FF3621"/>
+                    <path d="M160.591 172.899L160.728 168.25L167.862 161.489L183.478 177.969L176.344 184.729L171.683 184.604L160.591 172.899ZM165.558 170.689L174.145 179.752L176.232 177.774L167.645 168.712L165.558 170.689Z" fill="#FF3621"/>
+                    <path d="M145.115 178.955L154.962 172.986L166.731 192.4L156.884 198.37L154.227 193.987L159.692 190.674L157.788 187.534L152.323 190.847L149.667 186.465L155.132 183.152L153.22 179.999L147.755 183.311L145.115 178.955Z" fill="#FF3621"/>
+                    <path d="M129.997 188.169L132.053 183.997L138.233 181.882L142.414 183.918L143.523 187.156L138.674 188.816L138.153 187.293L135.432 188.224L136.627 191.713L141.076 190.19L145.263 192.241L147.636 199.174L145.585 203.361L139.406 205.476L135.219 203.425L134.111 200.187L138.959 198.528L139.476 200.036L142.196 199.104L141.006 195.63L136.557 197.154L132.37 195.102L129.997 188.169Z" fill="#FF3621"/>
+                    <path d="M120.004 186.493L125.064 185.679L128.669 208.094L123.609 208.908L120.004 186.493Z" fill="#FF3621"/>
+                    <path d="M102.924 190.282L106.251 187.031L112.782 187.092L116.048 190.404L115.899 206.528L112.572 209.794L106.041 209.734L102.774 206.406L102.821 201.375L107.946 201.423L107.916 204.626L110.791 204.652L110.906 192.169L108.032 192.142L108.012 194.236L109.606 194.25L109.559 199.359L102.84 199.297L102.924 190.282Z" fill="#FF3621"/>
+                    <path d="M85.9382 183.439L90.8773 184.619L91.8204 193.246L93.7192 185.298L98.7039 186.489L93.4287 208.57L88.4896 207.39L87.5501 198.748L85.6477 206.711L80.6629 205.521L85.9382 183.439Z" fill="#FF3621"/>
+                    <path d="M66.7179 187.038C66.2127 187.88 65.6326 188.328 64.9777 188.382C64.3118 188.455 63.6497 188.294 62.9913 187.899C62.3511 187.514 61.9068 187.011 61.6583 186.389C61.3988 185.785 61.5216 185.063 62.0268 184.221C62.5101 183.417 63.0902 182.969 63.7671 182.877C64.433 182.805 65.086 182.96 65.7261 183.345C66.3845 183.74 66.8379 184.249 67.0865 184.871C67.324 185.511 67.2012 186.234 66.7179 187.038Z" fill="#FF3621"/>
+                    <path d="M48.4284 156.36L51.8341 160.189L45.2722 166.025L47.1828 168.173L53.7446 162.338L57.1504 166.167L40.1853 181.254L33.6542 173.91L33.9269 169.256L38.3287 165.341L41.3949 165.521L41.5746 162.455L48.4284 156.36ZM41.4425 169.43L38.6987 171.871L40.6092 174.019L43.3531 171.579L41.4425 169.43Z" fill="#FF3621"/>
+                    <path d="M40.4151 142.879L46.0685 152.912L26.2896 164.058L20.6362 154.025L25.1011 151.509L28.2385 157.077L31.4374 155.274L28.3 149.706L32.7649 147.19L35.9023 152.758L39.1148 150.948L35.9774 145.38L40.4151 142.879Z" fill="#FF3621"/>
+                    <path d="M31.6897 127.472L35.7938 129.662L37.7099 135.905L35.5402 140.02L32.2689 141.024L30.7654 136.124L32.3039 135.652L31.4605 132.904L27.9352 133.985L29.315 138.482L27.1304 142.601L20.1247 144.75L16.0057 142.566L14.0896 136.322L16.2742 132.203L19.5455 131.199L21.0491 136.099L19.5254 136.566L20.3689 139.315L23.8792 138.237L22.4994 133.741L24.684 129.622L31.6897 127.472Z" fill="#FF3621"/>
+                    <path d="M33.1711 110.919L34.1245 122.395L11.4993 124.275L10.5459 112.798L15.6533 112.374L16.1824 118.743L19.8417 118.439L19.3126 112.07L24.42 111.646L24.9491 118.015L28.6239 117.709L28.0948 111.341L33.1711 110.919Z" fill="#FF3621"/>
+                    <path d="M34.875 93.2668L34.2529 98.3382L31.0225 98.4928L30.5621 102.246L33.6593 103.177L33.039 108.233L11.0166 101.296L11.8271 94.6897L34.875 93.2668ZM25.8427 98.7547L19.9207 99.0357L25.6011 100.724L25.8427 98.7547Z" fill="#FF3621"/>
+                    <path d="M39.9354 78.4147L38.2285 83.2472L29.9486 80.3226L28.9911 83.0334L37.271 85.958L35.5641 90.7904L14.1571 83.2292L17.4304 73.9622L21.6371 71.9515L27.1914 73.9134L28.5159 76.6846L31.2871 75.3601L39.9354 78.4147ZM25.1162 78.6157L21.6539 77.3928L20.6964 80.1037L24.1587 81.3266L25.1162 78.6157Z" fill="#FF3621"/>
+                    <path d="M46.0641 61.7536L47.0664 66.2958L43.5649 71.8091L39.0275 72.833L25.4157 64.188L24.4002 59.6374L27.9018 54.1241L32.4523 53.1086L36.6994 55.806L33.9518 60.1322L31.2479 58.415L29.7066 60.8419L40.2451 67.535L41.7865 65.1081L39.0826 63.3908L41.8302 59.0646L46.0641 61.7536Z" fill="#FF3621"/>
+                    <path d="M60.8316 50.9667L57.1894 54.5723L51.0116 48.3317L48.9684 50.3544L55.1463 56.5949L51.5041 60.2005L35.5318 44.0662L39.1739 40.4606L45.3628 46.7122L47.406 44.6896L41.2171 38.4379L44.8593 34.8323L60.8316 50.9667Z" fill="#FF3621"/>
+                    <path d="M67.8475 32.7426C67.3972 31.8707 67.3209 31.1418 67.6185 30.5559C67.9064 29.951 68.3915 29.4724 69.0739 29.12C69.7373 28.7773 70.3989 28.6637 71.0588 28.7791C71.7089 28.8756 72.2591 29.3597 72.7094 30.2316C73.1401 31.0657 73.2164 31.7946 72.9384 32.4184C72.6505 33.0233 72.1749 33.497 71.5114 33.8397C70.8291 34.1921 70.158 34.3106 69.4981 34.1952C68.8284 34.0608 68.2782 33.5766 67.8475 32.7426Z" fill="#FF3621"/>
+                    <path d="M103.041 30.1151L100.348 33.9075L90.6623 35.5729L86.8152 13.1981L96.5012 11.5327L100.309 14.2233L103.041 30.1151ZM97.6834 29.1972L95.5679 16.8934L92.7345 17.3806L94.85 29.6844L97.6834 29.1972Z" fill="#FF3621"/>
+                    <circle cx="110" cy="110" r="109" stroke="#FF3621" stroke-width="2"/>
+                </g>
+                <path d="M142.142 102.979L110.034 121.631L75.6536 101.702L74 102.624V117.092L110.034 137.943L142.142 119.362V127.021L110.034 145.674L75.6536 125.745L74 126.667V129.149L110.034 150L146 129.149V114.681L144.346 113.759L110.034 133.617L77.8584 115.035V107.376L110.034 125.957L146 105.106V90.8511L144.209 89.7872L110.034 109.574L79.512 91.9858L110.034 74.3262L135.114 88.8652L137.319 87.5887V85.8156L110.034 70L74 90.8511V93.1206L110.034 113.972L142.142 95.3191V102.979Z" fill="#FF3621"/>
+                <circle cx="110" cy="110" r="69" stroke="#FF3621" stroke-width="2"/>
+            </svg>
+        </div>
+    </div>
+    <h1>Ask a question.<br><em>Get a research doc.</em></h1>
+    <p class="hero-sub">10 agents search in parallel — docs, community, internal intel, competitive, quantitative data, market landscape — then synthesize into a Google Doc. Questions are decomposed for targeted dispatch. Gaps and conflicts trigger follow-up research.</p>
+    <div style="display:flex; flex-direction:column; gap:1.2rem; align-items:center; width:100%; max-width:680px; margin:0 auto;">
+        <div style="font-size:0.72rem; color:var(--text-muted);">1. Open terminal</div>
+        <div class="hero-install" onclick="copyInstall(this)" style="width:100%; justify-content:space-between;">
+            <span style="text-align:left;"><span class="ck">isaac plugin add</span> db-bricksearch@experimental</span>
+            <span style="color:var(--accent); font-size:0.75rem; font-weight:600; flex-shrink:0; margin-left:1rem;">Copy</span>
+        </div>
+        <div style="font-size:0.72rem; color:var(--text-muted);">2. Start a new <strong style="color:var(--text);">isaac</strong> session, then paste:</div>
+        <div class="hero-install" onclick="copyShortcut(this)" style="width:100%; justify-content:space-between;">
+            <span style="text-align:left; word-break:break-all;"><span class="ck">cp</span> ~/.claude/plugins/cache/experimental-plugin-marketplace/db-bricksearch/*/commands/bricksearch.md ~/.claude/commands/</span>
+            <span style="color:var(--accent); font-size:0.75rem; font-weight:600; flex-shrink:0; margin-left:1rem;">Copy</span>
+        </div>
+        <div style="font-size:0.82rem; color:var(--text-muted);">3. Type <code style="font-family:var(--mono); color:var(--accent); font-size:0.82rem; font-weight:600;">/bricksearch</code></div>
+    </div>
+</section>
+</div>
+
+<!-- ── Step 1: Agents ─────────────────────────────────────────────── -->
+<div class="container">
+<section>
+    <div class="section-label">Step 1</div>
+    <h2>Your question triggers up to 10 agents</h2>
+    <p class="section-desc">Before dispatch, the system checks the knowledge base for prior research on your question, then decomposes it into sub-questions and confirms the plan with you. Agents load intel progressively — Tier 1 sources by default, deeper tiers on demand. Each follows a mandatory source protocol — every source is attempted, nothing is silently skipped.</p>
+    <div class="table-wrap">
+    <table class="agent-table">
+        <thead>
+            <tr><th>Agent</th><th>Covers</th><th>Known bias</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>Official Docs</td><td>Databricks docs, release notes, blog</td><td>Shipped features only</td></tr>
+            <tr><td>Community Voice</td><td>Forums, Reddit, Ideas Portal</td><td>Vocal power users</td></tr>
+            <tr><td>Internal Intel</td><td>PRDs, UXR, customer notes, ES tickets</td><td>Past internal thinking</td></tr>
+            <tr><td>Competitive</td><td>Battlecards, competitor features, win/loss</td><td>Databricks-favorable framing</td></tr>
+            <tr><td>Quantitative</td><td>Logfood SQL queries — executed, not hypothetical</td><td>Instrumented features only</td></tr>
+            <tr><td>Market Landscape</td><td>Analyst views, MAD landscape (~930 companies)</td><td>Analyst views lag 6–18 months</td></tr>
+            <tr><td>Roadmap</td><td>Pre-reads, Aha!, Jira, leadership priorities</td><td>Formally planned work only</td></tr>
+            <tr><td>Foundations</td><td>Academic papers, W3C/ISO standards</td><td>Theoretical</td></tr>
+            <tr><td>Sales & GTM</td><td>BrickBites, SFDC win/loss, PMM messaging</td><td>Deal-winning narratives</td></tr>
+            <tr><td>Product Design</td><td>NNGroup, design systems, competitor UX</td><td>UX elegance over feasibility</td></tr>
+        </tbody>
+    </table>
+    </div>
+</section>
+</div>
+
+<!-- ── Step 2: Consolidation ─────────────────────────────────────── -->
+<div class="container">
+<section>
+    <div class="section-label">Step 2</div>
+    <h2>Insights are consolidated</h2>
+    <p class="section-desc">Before anything is written, the system checks coverage confidence, verifies every metric (SQL for internal numbers, hyperlinks for external), and resolves conflicts via the trust hierarchy. Gaps are classified as addressable (can be researched further) or structural (access limitations). Contradictions across sources are tracked and surfaced explicitly. You see status updates as each agent reports back — then approve or skip targeted follow-ups.</p>
+    <p style="font-size: 0.78rem; color: var(--text-dim); margin-bottom: 1rem;">Trust hierarchy — higher rank wins when sources conflict:</p>
+    <div class="trust">
+        <div class="trust-row"><div class="trust-rank">1</div><div class="trust-source">Logfood quantitative data</div><div class="trust-why">Observed behavior</div></div>
+        <div class="trust-row"><div class="trust-rank">2</div><div class="trust-source">Internal PRDs & strategy docs</div><div class="trust-why">Intent & decisions</div></div>
+        <div class="trust-row"><div class="trust-rank">3</div><div class="trust-source">Official Databricks docs</div><div class="trust-why">Publicly committed</div></div>
+        <div class="trust-row"><div class="trust-rank">4</div><div class="trust-source">Customer notes / Win-loss data</div><div class="trust-why">Direct customer signal</div></div>
+        <div class="trust-row"><div class="trust-rank">5</div><div class="trust-source">Industry standards / Field signal</div><div class="trust-why">Established definitions</div></div>
+        <div class="trust-row"><div class="trust-rank">6</div><div class="trust-source">Community & Ideas Portal</div><div class="trust-why">Public signal</div></div>
+        <div class="trust-row"><div class="trust-rank">7</div><div class="trust-source">Competitive battlecards</div><div class="trust-why">Useful, not neutral</div></div>
+        <div class="trust-row"><div class="trust-rank">8</div><div class="trust-source">External analysts</div><div class="trust-why">Independent but lagging</div></div>
+        <div class="trust-row"><div class="trust-rank">9</div><div class="trust-source">External blogs</div><div class="trust-why">Opinion-based</div></div>
+    </div>
+    <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 1.5rem; line-height: 1.7;">Conflicts, gaps, and shallow areas trigger targeted follow-up — you see key findings and confirm follow-up questions before agents are re-dispatched. Internal metrics include reproducible SQL queries. External numbers hyperlink directly to the source.</p>
+</section>
+</div>
+
+<!-- ── Step 3: Output ────────────────────────────────────────────── -->
+<div class="container">
+<section>
+    <div class="section-label">Step 3</div>
+    <h2>A shareable Google Doc</h2>
+    <p class="output-desc">Executive summary, themes, conflicts, gaps, and recommendations up front. Raw agent outputs and methodology in the appendix. Follow-ups update the same doc — URL never changes.</p>
+    <div class="examples">
+        <a href="https://docs.google.com/document/d/1hwrKNbwrVe6oVh02ECQg6wHfUOOg6dbITeeiNIjy7Xk/edit" target="_blank" class="example-link">
+            <div class="example-title">Enterprise Ontology Research</div>
+            <div class="example-desc">Full 10-agent synthesis. Explores whether Databricks should build ontology features in the Governance Hub.</div>
+        </a>
+        <a href="https://docs.google.com/document/d/1PaIxaWzbU2p33lKAjuuTH252Mj5raR1cbsP4m0jfNF4/edit" target="_blank" class="example-link">
+            <div class="example-title">Monetization Research</div>
+            <div class="example-desc">Multi-agent synthesis on monetization strategy, pricing models, and competitive positioning.</div>
+        </a>
+        <a href="https://docs.google.com/document/d/1ea3SToPtmT1sgLa8efYOUFR-R8PPoNgPNsM6RuDHdK0/edit" target="_blank" class="example-link">
+            <div class="example-title">Tag Automation Research</div>
+            <div class="example-desc">Customer demand, industry standards (ISO 27001, NIST), and competitive comparison across 7 use cases.</div>
+        </a>
+    </div>
+</section>
+</div>
+
+<!-- ── Footer ────────────────────────────────────────────────────── -->
+<footer>
+    <div class="container">
+        <p>Bricksearch · Built by <a href="#">Mudit Mittal</a> · Requires Glean, Logfood, Confluence, Google Docs MCPs for full coverage · <a href="https://github.com/databricks-eng/plugin-marketplace">Plugin Marketplace</a></p>
+    </div>
+</footer>
+
+<script>
+    function copyShortcut(el) {
+        const text = 'cp ~/.claude/plugins/cache/experimental-plugin-marketplace/db-bricksearch/*/commands/bricksearch.md ~/.claude/commands/';
+        const label = el.querySelector('span:last-child');
+        navigator.clipboard.writeText(text).then(() => {
+            label.textContent = 'Copied!';
+            label.style.color = '#22c55e';
+            setTimeout(() => { label.textContent = 'Copy'; label.style.color = ''; }, 2000);
+        }).catch(() => {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            label.textContent = 'Copied!';
+            label.style.color = '#22c55e';
+            setTimeout(() => { label.textContent = 'Copy'; label.style.color = ''; }, 2000);
+        });
+    }
+
+    function copyInstall(el) {
+        const text = 'isaac plugin add db-bricksearch@experimental';
+        const label = el.querySelector('span:last-child');
+        navigator.clipboard.writeText(text).then(() => {
+            label.textContent = 'Copied!';
+            label.style.color = '#22c55e';
+            setTimeout(() => { label.textContent = 'Copy'; label.style.color = ''; }, 2000);
+        }).catch(() => {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            label.textContent = 'Copied!';
+            label.style.color = '#22c55e';
+            setTimeout(() => { label.textContent = 'Copy'; label.style.color = ''; }, 2000);
+        });
+    }
+</script>
+</body>
+</html>
