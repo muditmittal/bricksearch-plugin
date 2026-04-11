@@ -382,9 +382,17 @@
     <p class="hero-sub">Multi-agent research across internal intel, customer signal, competitive landscape, and quantitative data — verified by DBRA and curated Genie Spaces — synthesized into a shareable Google Doc.</p>
     <div style="display:flex; flex-direction:column; gap:1rem; align-items:center; width:100%; max-width:680px; margin:0 auto;">
         <div style="font-size:0.72rem; color:var(--text-muted); margin-bottom:-0.3rem;">One-time setup — run these three commands in terminal:</div>
-        <div class="hero-install" onclick="copyAllSetup(this)" style="width:100%; justify-content:space-between;">
-            <span style="text-align:left; word-break:break-all; line-height:1.8;"><span style="color:var(--text-muted); font-family:-apple-system,sans-serif; font-size:0.7rem;"># 1. clone marketplace &nbsp;</span><span class="ck">git clone</span> https://github.com/databricks-eng/plugin-marketplace.git ~/plugin-marketplace<br><span style="color:var(--text-muted); font-family:-apple-system,sans-serif; font-size:0.7rem;"># 2. install plugin &nbsp;</span><span class="ck">isaac plugin add</span> db-bricksearch@experimental-plugin-marketplace<br><span style="color:var(--text-muted); font-family:-apple-system,sans-serif; font-size:0.7rem;"># 3. register shortcut &nbsp;</span><span class="ck">cp</span> ~/.claude/plugins/cache/experimental-plugin-marketplace/db-bricksearch/*/commands/bricksearch.md ~/.claude/commands/</span>
-            <span style="color:var(--accent); font-size:0.75rem; font-weight:600; flex-shrink:0; margin-left:1rem; align-self:flex-start; margin-top:0.3rem;">Copy</span>
+        <div class="hero-install" onclick="copyClone(this)" style="width:100%; justify-content:space-between;">
+            <div style="text-align:left; word-break:break-all;"><div style="color:var(--text-muted); font-family:-apple-system,sans-serif; font-size:0.7rem; margin-bottom:0.3rem;">First-time plugin users</div><span class="ck">git clone</span> https://github.com/databricks-eng/plugin-marketplace.git ~/plugin-marketplace</div>
+            <span style="color:var(--accent); font-size:0.75rem; font-weight:600; flex-shrink:0; margin-left:1rem;">Copy</span>
+        </div>
+        <div class="hero-install" onclick="copyInstall(this)" style="width:100%; justify-content:space-between; border:2px solid var(--accent);">
+            <div style="text-align:left;"><div style="color:var(--text-muted); font-family:-apple-system,sans-serif; font-size:0.7rem; margin-bottom:0.3rem;">Install plugin</div><span class="ck">isaac plugin add</span> db-bricksearch@experimental-plugin-marketplace</div>
+            <span style="color:var(--accent); font-size:0.75rem; font-weight:600; flex-shrink:0; margin-left:1rem;">Copy</span>
+        </div>
+        <div class="hero-install" onclick="copyShortcut(this)" style="width:100%; justify-content:space-between;">
+            <div style="text-align:left; word-break:break-all;"><div style="color:var(--text-muted); font-family:-apple-system,sans-serif; font-size:0.7rem; margin-bottom:0.3rem;">Create /bricksearch command</div><span class="ck">cp</span> ~/.claude/plugins/cache/experimental-plugin-marketplace/db-bricksearch/*/commands/bricksearch.md ~/.claude/commands/</div>
+            <span style="color:var(--accent); font-size:0.75rem; font-weight:600; flex-shrink:0; margin-left:1rem;">Copy</span>
         </div>
         <div style="font-size:0.65rem; color:var(--text-muted); margin-top:-0.3rem;">Already installed? Run <code style="font-family:var(--mono); color:var(--accent); font-size:0.65rem;">isaac plugin update</code> to get the latest version</div>
         <div style="font-size:0.92rem; color:var(--text); margin-top:0.5rem;">Then type <code style="font-family:var(--mono); color:var(--accent); font-size:0.92rem; font-weight:600;">/bricksearch</code> in any Isaac session.</div>
@@ -495,8 +503,8 @@
         });
     }
 
-    function copyAllSetup(el) {
-        const text = 'git clone https://github.com/databricks-eng/plugin-marketplace.git ~/plugin-marketplace\nisaac plugin add db-bricksearch@experimental-plugin-marketplace\ncp ~/.claude/plugins/cache/experimental-plugin-marketplace/db-bricksearch/*/commands/bricksearch.md ~/.claude/commands/';
+    function copyClone(el) {
+        const text = 'git clone https://github.com/databricks-eng/plugin-marketplace.git ~/plugin-marketplace';
         const label = el.querySelector('span:last-child');
         navigator.clipboard.writeText(text).then(() => {
             label.textContent = 'Copied!';
