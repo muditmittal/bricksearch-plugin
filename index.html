@@ -290,15 +290,15 @@
 
         .examples {
             display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 0.6rem;
         }
 
         .example-link {
-            flex: 1;
-            min-width: 260px;
-            display: block;
-            padding: 1.1rem 1.3rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem 1.3rem;
             background: var(--card);
             border: 1px solid var(--border);
             border-radius: 10px;
@@ -307,16 +307,33 @@
         }
         .example-link:hover { border-color: var(--accent-border); }
 
+        .example-icon {
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            margin-top: 2px;
+        }
+
+        .example-body {
+            flex: 1;
+            min-width: 0;
+        }
+
         .example-title {
-            font-size: 0.85rem;
+            font-size: 0.88rem;
             font-weight: 600;
             color: #fff;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.15rem;
+        }
+        .example-date {
+            font-size: 0.68rem;
+            color: var(--text-dim);
+            margin-bottom: 0.3rem;
         }
         .example-desc {
             font-size: 0.73rem;
             color: var(--text-muted);
-            line-height: 1.5;
+            line-height: 1.45;
         }
 
         /* ─── Footer ─────────────────────────────────────── */
@@ -461,16 +478,44 @@
     <p class="output-desc">Executive summary, themes, conflicts, gaps, and recommendations up front. Raw agent outputs and methodology in the appendix. Follow-ups update the same doc — URL never changes.</p>
     <div class="examples">
         <a href="https://docs.google.com/document/d/1M00YeSjDndnYgKdON1012hT3ACRtVmB28Qx3ERGVcUA/edit?tab=t.0#heading=h.5eglpw5xnd2e" target="_blank" class="example-link">
-            <div class="example-title">Lakebase Positioning</div>
-            <div class="example-desc">8-agent synthesis. Competitive landscape, $20M+ ARR, bidirectional sync moat, AI agent growth vector, design implications.</div>
-        </a>
-        <a href="https://docs.google.com/document/d/1_O3nj4rbtbex-GNftm6LzqQ_Su5T692-gzygpX6R98w/edit?tab=t.0#heading=h.4okg24wasan9" target="_blank" class="example-link">
-            <div class="example-title">Ontology &amp; Databricks</div>
-            <div class="example-desc">Full 10-agent synthesis. Explores whether Databricks should build ontology features in the Governance Hub.</div>
+            <svg class="example-icon" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C9.79 2 8.02 3.79 8.02 6L8 42c0 2.21 1.77 4 3.98 4H36c2.21 0 4-1.79 4-4V14L28 2H12z" fill="#4285F4"/><path d="M30 14V2l10 12H30z" fill="#A1C2FA"/><path d="M16 30h16v2H16zm0-4h16v2H16zm0-4h16v2H16z" fill="#fff"/></svg>
+            <div class="example-body">
+                <div class="example-title">Lakebase Positioning</div>
+                <div class="example-date">Apr 10, 2026</div>
+                <div class="example-desc">Competitive landscape, bidirectional sync moat, AI agent growth vector, and design implications across 8 agents.</div>
+            </div>
         </a>
         <a href="https://docs.google.com/document/d/1Co7qlIBxiLPk2uMwo12X2wLPHyrPH55qEfL6ocF3m9A/edit?tab=t.0#heading=h.ozqxntoxjzas" target="_blank" class="example-link">
-            <div class="example-title">Databricks Tags</div>
-            <div class="example-desc">Deep dive across 8 subtopics — customer demand, standards, competitive comparison, governance implications.</div>
+            <svg class="example-icon" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C9.79 2 8.02 3.79 8.02 6L8 42c0 2.21 1.77 4 3.98 4H36c2.21 0 4-1.79 4-4V14L28 2H12z" fill="#4285F4"/><path d="M30 14V2l10 12H30z" fill="#A1C2FA"/><path d="M16 30h16v2H16zm0-4h16v2H16zm0-4h16v2H16z" fill="#fff"/></svg>
+            <div class="example-body">
+                <div class="example-title">Databricks Tags Deep Dive</div>
+                <div class="example-date">Mar 17, 2026</div>
+                <div class="example-desc">8 subtopics — customer demand, industry standards (ISO, NIST), competitive comparison, and governance implications.</div>
+            </div>
+        </a>
+        <a href="https://docs.google.com/document/d/1PaIxaWzbU2p33lKAjuuTH252Mj5raR1cbsP4m0jfNF4/edit" target="_blank" class="example-link">
+            <svg class="example-icon" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C9.79 2 8.02 3.79 8.02 6L8 42c0 2.21 1.77 4 3.98 4H36c2.21 0 4-1.79 4-4V14L28 2H12z" fill="#4285F4"/><path d="M30 14V2l10 12H30z" fill="#A1C2FA"/><path d="M16 30h16v2H16zm0-4h16v2H16zm0-4h16v2H16z" fill="#fff"/></svg>
+            <div class="example-body">
+                <div class="example-title">Governance Monetization Strategy</div>
+                <div class="example-date">Apr 7, 2026</div>
+                <div class="example-desc">Competitive pricing audit, AI governance white space, and bundling vs unbundling across Snowflake, Purview, Dataplex.</div>
+            </div>
+        </a>
+        <a href="https://docs.google.com/document/d/1_O3nj4rbtbex-GNftm6LzqQ_Su5T692-gzygpX6R98w/edit?tab=t.0#heading=h.4okg24wasan9" target="_blank" class="example-link">
+            <svg class="example-icon" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C9.79 2 8.02 3.79 8.02 6L8 42c0 2.21 1.77 4 3.98 4H36c2.21 0 4-1.79 4-4V14L28 2H12z" fill="#4285F4"/><path d="M30 14V2l10 12H30z" fill="#A1C2FA"/><path d="M16 30h16v2H16zm0-4h16v2H16zm0-4h16v2H16z" fill="#fff"/></svg>
+            <div class="example-body">
+                <div class="example-title">Enterprise Ontology &amp; Databricks</div>
+                <div class="example-date">Mar 16, 2026</div>
+                <div class="example-desc">Full 10-agent synthesis on whether Databricks should build ontology features in the Governance Hub.</div>
+            </div>
+        </a>
+        <a href="https://docs.google.com/document/d/1hwrKNbwrVe6oVh02ECQg6wHfUOOg6dbITeeiNIjy7Xk/edit" target="_blank" class="example-link">
+            <svg class="example-icon" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C9.79 2 8.02 3.79 8.02 6L8 42c0 2.21 1.77 4 3.98 4H36c2.21 0 4-1.79 4-4V14L28 2H12z" fill="#4285F4"/><path d="M30 14V2l10 12H30z" fill="#A1C2FA"/><path d="M16 30h16v2H16zm0-4h16v2H16zm0-4h16v2H16z" fill="#fff"/></svg>
+            <div class="example-body">
+                <div class="example-title">AI Governance for DAIS 2026</div>
+                <div class="example-date">Mar 18, 2026</div>
+                <div class="example-desc">Strategic readiness assessment — 6 workstreams, EU AI Act deadline, competitive positioning gaps, and IDC Leader placement.</div>
+            </div>
         </a>
     </div>
 </section>
