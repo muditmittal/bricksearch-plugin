@@ -406,25 +406,25 @@
 <div class="container">
 <section>
     <div class="section-label">Step 1</div>
-    <h2>Your question triggers up to 10 agents + DBRA</h2>
-    <p class="section-desc">Before dispatch, the system checks the knowledge base for prior research on your question, then decomposes it into sub-questions and confirms the plan with you. Agents load intel progressively — Tier 1 sources by default, deeper tiers on demand. For authoritative quantitative analysis, the Quantitative agent queries curated Genie Spaces and metric views. DBRA runs in parallel for independent quantitative signal. Each agent follows a mandatory source protocol — every source is attempted, nothing is silently skipped.</p>
+    <h2>Your question decomposes into parallel agent searches</h2>
+    <p class="section-desc">Bricksearch breaks your question into targeted sub-queries, confirms the plan with you, then dispatches specialized agents in parallel. Each covers a distinct source domain — from internal Logfood data and customer notes to competitor docs and academic standards. DBRA runs alongside for independent quantitative verification. Every agent follows a strict source protocol: nothing is silently skipped.</p>
     <div class="table-wrap">
     <table class="agent-table">
         <thead>
             <tr><th>Agent</th><th>Covers</th><th>Known bias</th></tr>
         </thead>
         <tbody>
-            <tr><td>Official Docs</td><td>Databricks docs, release notes, blog</td><td>Shipped features only</td></tr>
-            <tr><td>Community Voice</td><td>Forums, Reddit, Ideas Portal</td><td>Vocal power users</td></tr>
-            <tr><td>Internal Intel</td><td>PRDs, UXR, customer notes, ES tickets</td><td>Past internal thinking</td></tr>
-            <tr><td>Competitive</td><td>Battlecards, competitor features, win/loss</td><td>Databricks-favorable framing</td></tr>
-            <tr><td>Quantitative</td><td>Curated Genie Spaces + DBRA + direct SQL</td><td>Instrumented features only</td></tr>
-            <tr><td>Market Landscape</td><td>Analyst views, MAD landscape (~930 companies)</td><td>Analyst views lag 6–18 months</td></tr>
-            <tr><td>Roadmap</td><td>Pre-reads, Aha!, Jira, leadership priorities</td><td>Formally planned work only</td></tr>
-            <tr><td>Foundations</td><td>Academic papers, W3C/ISO standards</td><td>Theoretical</td></tr>
-            <tr><td>Sales & GTM</td><td>BrickBites, SFDC win/loss, PMM messaging</td><td>Deal-winning narratives</td></tr>
-            <tr><td>Product Design</td><td>NNGroup, design systems, competitor UX</td><td>UX elegance over feasibility</td></tr>
-            <tr><td>DBRA</td><td>Autonomous Logfood queries via Databricks Research Agent</td><td>May hallucinate table names</td></tr>
+            <tr><td>Quantitative</td><td>Curated Genie Spaces, metric views, DBRA, direct SQL — adoption, spend, trends, funnels</td><td>Instrumented features only</td></tr>
+            <tr><td>Internal Intel</td><td>PRDs, UXR archive, PM customer notes, ES tickets, CUJs, prior design work</td><td>Past internal thinking</td></tr>
+            <tr><td>Sales &amp; GTM</td><td>BrickBites, SFDC win/loss, QBR themes, PMM messaging, field playbooks</td><td>Deal-winning narratives</td></tr>
+            <tr><td>Competitive</td><td>Battlecards, competitor docs, feature matrices, pricing, UX comparisons</td><td>Databricks-favorable framing</td></tr>
+            <tr><td>Community Voice</td><td>Databricks forums, Reddit, Stack Overflow, Ideas Portal, GitHub issues</td><td>Vocal power users</td></tr>
+            <tr><td>Official Docs</td><td>Databricks docs, release notes, blog posts, API references</td><td>Shipped features only</td></tr>
+            <tr><td>Roadmap</td><td>Quarterly pre-reads, Aha!, Jira epics, leadership priorities, OKRs</td><td>Formally planned work only</td></tr>
+            <tr><td>Market Landscape</td><td>Gartner, Forrester, IDC, MAD landscape (~930 companies), VC funding</td><td>Analyst views lag 6–18 months</td></tr>
+            <tr><td>Product Design</td><td>NNGroup, design systems, competitor UX patterns, accessibility, IA</td><td>UX elegance over feasibility</td></tr>
+            <tr><td>Foundations</td><td>Academic papers, W3C/ISO/NIST standards, canonical definitions</td><td>Theoretical</td></tr>
+            <tr><td>DBRA</td><td>Autonomous Logfood SQL via Databricks Research Agent — runs twice (dispatch + verification)</td><td>May hallucinate table names</td></tr>
         </tbody>
     </table>
     </div>
@@ -435,21 +435,20 @@
 <div class="container">
 <section>
     <div class="section-label">Step 2</div>
-    <h2>Insights are consolidated &amp; verified</h2>
-    <p class="section-desc">Before anything is written, the system checks coverage confidence, verifies metrics through curated Genie Spaces and metric views, and resolves conflicts via the trust hierarchy. DBRA runs a verification pass — re-querying Logfood to confirm or refute quantitative claims from non-authoritative sources. Gaps are classified as addressable or structural. Contradictions are tracked and surfaced explicitly. You see status updates as each agent reports back — then approve or skip targeted follow-ups.</p>
-    <p style="font-size: 0.78rem; color: var(--text-dim); margin-bottom: 1rem;">Trust hierarchy — higher rank wins when sources conflict:</p>
+    <h2>Findings are verified, conflicts resolved</h2>
+    <p class="section-desc">As agents report back, findings are cross-referenced and ranked by authoritativeness. DBRA re-queries Logfood to verify any quantitative claim from a non-authoritative source. Contradictions are resolved — not hidden. Gaps trigger targeted follow-up that you approve before re-dispatch.</p>
+    <p style="font-size: 0.78rem; color: var(--text-dim); margin-bottom: 1rem;">When sources conflict, the higher-ranked source wins:</p>
     <div class="trust">
         <div class="trust-row"><div class="trust-rank">1</div><div class="trust-source">Genie Space metric views + Logfood data</div><div class="trust-why">Curated metrics &amp; observed behavior</div></div>
-        <div class="trust-row"><div class="trust-rank">2</div><div class="trust-source">Internal PRDs & strategy docs</div><div class="trust-why">Intent & decisions</div></div>
+        <div class="trust-row"><div class="trust-rank">2</div><div class="trust-source">Internal PRDs &amp; strategy docs</div><div class="trust-why">Intent &amp; decisions</div></div>
         <div class="trust-row"><div class="trust-rank">3</div><div class="trust-source">Official Databricks docs</div><div class="trust-why">Publicly committed</div></div>
         <div class="trust-row"><div class="trust-rank">4</div><div class="trust-source">Customer notes / Win-loss data</div><div class="trust-why">Direct customer signal</div></div>
         <div class="trust-row"><div class="trust-rank">5</div><div class="trust-source">Industry standards / Field signal</div><div class="trust-why">Established definitions</div></div>
-        <div class="trust-row"><div class="trust-rank">6</div><div class="trust-source">Community & Ideas Portal</div><div class="trust-why">Public signal</div></div>
+        <div class="trust-row"><div class="trust-rank">6</div><div class="trust-source">Community &amp; Ideas Portal</div><div class="trust-why">Public signal</div></div>
         <div class="trust-row"><div class="trust-rank">7</div><div class="trust-source">Competitive battlecards</div><div class="trust-why">Useful, not neutral</div></div>
         <div class="trust-row"><div class="trust-rank">8</div><div class="trust-source">External analysts</div><div class="trust-why">Independent but lagging</div></div>
         <div class="trust-row"><div class="trust-rank">9</div><div class="trust-source">External blogs</div><div class="trust-why">Opinion-based</div></div>
     </div>
-    <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 1.5rem; line-height: 1.7;">Conflicts, gaps, and shallow areas trigger targeted follow-up — you see key findings and confirm follow-up questions before agents are re-dispatched. Quantitative findings are verified through Genie Spaces and DBRA before publishing. External numbers hyperlink directly to the source.</p>
 </section>
 </div>
 
