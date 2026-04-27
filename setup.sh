@@ -63,6 +63,15 @@ fi
 # ---------------------------------------------------------------------------
 step "Verifying GitHub access to ${ORG} org"
 
+# Returns 0 if $1 is an active member of $ORG. Switches gh to that account
+# as a side effect — necessary because gh API calls always use the active
+# account, no per-call user flag.
+check_org_membership() {
+    local acct="$1"
+    gh auth switch --user "$acct" >/dev/null 2>&1 || return 1
+    gh api "user/memberships/orgs/${ORG}" --jq '.state' 2>/dev/null | grep -q active
+}
+
 if [ "$HAS_GH" = "1" ]; then
     if ! gh auth status >/dev/null 2>&1; then
         fail "gh is not authenticated."
@@ -71,23 +80,45 @@ if [ "$HAS_GH" = "1" ]; then
         die "Re-run setup after gh auth succeeds."
     fi
 
-    # Use whichever account is currently active. If you have multiple gh
-    # accounts and the wrong one is active, this will fail loudly with the
-    # account name so you know which one to switch.
-    ACTIVE_ACCOUNT=$(gh api user --jq .login 2>/dev/null || echo "(unknown)")
+    ORIGINAL_ACTIVE=$(gh api user --jq .login 2>/dev/null || echo "")
+    TARGET=""
 
-    if ! gh api "user/memberships/orgs/${ORG}" --jq '.state' 2>/dev/null | grep -q active; then
-        fail "Setup tried to use GitHub account '${ACTIVE_ACCOUNT}' — it is not an active member of '${ORG}'."
-        printf "\n${DIM}If you have a Databricks-linked GitHub account, switch to it and re-run:${RST}\n"
-        printf "  gh auth switch --user <your-databricks-account>\n"
-        printf "${DIM}Or authorize SSO for '${ACTIVE_ACCOUNT}': https://github.com/orgs/${ORG}/sso${RST}\n"
-        printf "${DIM}If you don't have ${ORG} access at all, request it via the internal Databricks GitHub-org-access process.${RST}\n\n"
+    # Fast path: active gh account is already a databricks-eng member
+    # (single-account users hit this and never see any switch warning)
+    if [ -n "$ORIGINAL_ACTIVE" ] && check_org_membership "$ORIGINAL_ACTIVE"; then
+        TARGET="$ORIGINAL_ACTIVE"
+    else
+        # Multi-account fallback: try every other authenticated gh account.
+        # Common case: user has a personal GitHub account active, but also has
+        # a Databricks-linked work account authenticated. Use the work one.
+        for ACCT in $(gh auth status 2>&1 | grep -oE 'github\.com account [^ ]+' | awk '{print $3}'); do
+            [ "$ACCT" = "$ORIGINAL_ACTIVE" ] && continue
+            if check_org_membership "$ACCT"; then
+                TARGET="$ACCT"
+                break
+            fi
+        done
+    fi
+
+    if [ -z "$TARGET" ]; then
+        # No authenticated account works. Restore original active before exit.
+        [ -n "$ORIGINAL_ACTIVE" ] && gh auth switch --user "$ORIGINAL_ACTIVE" >/dev/null 2>&1 || true
+        fail "None of your authenticated GitHub accounts are active members of '${ORG}':"
+        gh auth status 2>&1 | grep -oE 'github\.com account [^ ]+' | awk '{print "    - " $3}' >&2
+        printf "\n${DIM}Either:${RST}\n"
+        printf "  1. Add a databricks-eng-linked account: gh auth login\n"
+        printf "  2. Authorize SSO for an existing account: https://github.com/orgs/${ORG}/sso\n"
+        printf "  3. Request ${ORG} membership via the internal Databricks GitHub-org-access process\n\n"
         die "Cannot reach the internal marketplace without ${ORG} membership."
     fi
 
-    ok "GitHub account '${ACTIVE_ACCOUNT}' verified as ${ORG} member"
+    if [ "$TARGET" != "$ORIGINAL_ACTIVE" ]; then
+        warn "Switched gh active account from '${ORIGINAL_ACTIVE:-?}' to '${TARGET}' (${ORG} member) for this setup."
+        warn "Run \`gh auth switch --user ${ORIGINAL_ACTIVE}\` later if you want to flip back."
+    fi
+    ok "Using GitHub account '${TARGET}' — ${ORG} membership verified"
 
-    # Make sure git knows how to use gh for https clones
+    # Make sure git knows how to use gh for https clones (uses TARGET account)
     gh auth setup-git >/dev/null 2>&1 || true
 else
     # No gh — we'll trust the clone to surface any auth errors.
