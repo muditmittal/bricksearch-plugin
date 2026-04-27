@@ -130,12 +130,26 @@ fi
 # ---------------------------------------------------------------------------
 step "Preparing marketplace at ${MARKETPLACE_DIR}"
 
+# Normalize a git remote URL so SSH and HTTPS forms of the same repo compare equal.
+# git@github.com:owner/repo[.git]   ->  https://github.com/owner/repo
+# https://github.com/owner/repo[.git/]  ->  https://github.com/owner/repo
+normalize_remote() {
+    local url="$1"
+    url="${url%/}"
+    url="${url%.git}"
+    if [[ "$url" == git@*:* ]]; then
+        local host="${url#git@}"
+        host="${host%%:*}"
+        local path="${url#*:}"
+        url="https://${host}/${path}"
+    fi
+    echo "$url"
+}
+
 if [ -d "$MARKETPLACE_DIR/.git" ]; then
-    # Is it the right repo?
+    # Is it the right repo? (compare normalized — SSH and HTTPS are equivalent)
     EXISTING_URL=$(git -C "$MARKETPLACE_DIR" config --get remote.origin.url 2>/dev/null || echo "")
-    NORMALIZED="${EXISTING_URL%.git}"
-    EXPECTED="${MARKETPLACE_URL%.git}"
-    if [ "$NORMALIZED" = "$EXPECTED" ]; then
+    if [ "$(normalize_remote "$EXISTING_URL")" = "$(normalize_remote "$MARKETPLACE_URL")" ]; then
         step "Existing clone found — pulling latest"
         if git -C "$MARKETPLACE_DIR" pull --ff-only 2>&1 | sed 's/^/    /'; then
             ok "Marketplace up to date"
