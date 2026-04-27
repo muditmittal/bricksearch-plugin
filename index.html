@@ -414,10 +414,10 @@
     <div style="display:flex; flex-direction:column; gap:1rem; align-items:center; width:100%; max-width:680px; margin:0 auto;">
         <div style="font-size:0.72rem; color:var(--text-muted); margin-bottom:-0.3rem;">Install or update — paste this in your terminal:</div>
         <div class="hero-install" onclick="copyOneLiner(this)" style="width:100%; justify-content:space-between; border:2px solid var(--accent);">
-            <div style="text-align:left; word-break:break-all;"><div style="color:var(--text-muted); font-family:-apple-system,sans-serif; font-size:0.7rem; margin-bottom:0.3rem;">Idempotent — handles fresh installs and updates the same way; auto-creates <code style="color:var(--accent); font-family:inherit; font-size:0.7rem;">/bricksearch</code></div><span class="ck">curl</span> -fsSL https://muditmittal.github.io/bricksearch-plugin/install.sh | <span class="ck">bash</span></div>
+            <div style="text-align:left; word-break:break-all;"><div style="color:var(--text-muted); font-family:-apple-system,sans-serif; font-size:0.7rem; margin-bottom:0.3rem;">Idempotent — handles fresh installs and updates the same way; auto-creates <code style="color:var(--accent); font-family:inherit; font-size:0.7rem;">/bricksearch</code></div><span class="ck">curl</span> -fsSL https://muditmittal.github.io/bricksearch-plugin/setup.sh | <span class="ck">bash</span></div>
             <span style="color:var(--accent); font-size:0.75rem; font-weight:600; flex-shrink:0; margin-left:1rem;">Copy</span>
         </div>
-        <div style="font-size:0.65rem; color:var(--text-muted); margin-top:-0.3rem;">The script is hosted in this repo — <a href="https://github.com/muditmittal/bricksearch-plugin/blob/main/install.sh" target="_blank" style="color:var(--accent); text-decoration:none;">view source</a> before running if you want.</div>
+        <div style="font-size:0.65rem; color:var(--text-muted); margin-top:-0.3rem;">The script is hosted in this repo — <a href="https://github.com/muditmittal/bricksearch-plugin/blob/main/setup.sh" target="_blank" style="color:var(--accent); text-decoration:none;">view source</a> before running if you want.</div>
         <div style="font-size:0.92rem; color:var(--text); margin-top:0.5rem;">Then type <code style="font-family:var(--mono); color:var(--accent); font-size:0.92rem; font-weight:600;">/bricksearch</code> in any Isaac session.</div>
         <details class="manual-install" style="width:100%; margin-top:1rem;">
             <summary style="cursor:pointer; font-size:0.78rem; color:var(--text-muted); padding:0.4rem 0; user-select:none; outline:none;">Prefer to run the commands manually?</summary>
@@ -564,7 +564,7 @@
 
 <script>
     function copyOneLiner(el) {
-        const text = 'curl -fsSL https://muditmittal.github.io/bricksearch-plugin/install.sh | bash';
+        const text = 'curl -fsSL https://muditmittal.github.io/bricksearch-plugin/setup.sh | bash';
         const label = el.querySelector('span:last-child');
         navigator.clipboard.writeText(text).then(() => {
             label.textContent = 'Copied!';

@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
-# Bricksearch installer — idempotent, diagnostic, fresh-user-safe.
+# Bricksearch setup — idempotent installer + updater for db-bricksearch.
+#
+# The same script handles both fresh installs and updates. Run it whenever
+# you want to install or refresh Bricksearch.
 #
 # Handles every failure mode observed in testing:
 #   - missing gh auth / missing databricks-eng membership -> actionable error
+#     naming the GitHub account that was used
 #   - stale ~/plugin-marketplace from a prior failed attempt -> git pull or clear error
 #   - wrong repo at ~/plugin-marketplace -> refuses to clobber, tells user to move it
 #   - fresh isaac users with no ~/.claude/commands dir -> mkdir -p
@@ -10,8 +14,8 @@
 #   - zsh strict-glob vs bash literal -> explicit ls/tail, no glob
 #   - user retries after anything -> every step is idempotent
 #
-# Usage: curl -fsSL https://muditmittal.github.io/bricksearch-plugin/install.sh | bash
-#        or: bash install.sh
+# Usage: curl -fsSL https://muditmittal.github.io/bricksearch-plugin/setup.sh | bash
+#        or: bash setup.sh
 
 set -euo pipefail
 
@@ -34,8 +38,8 @@ PLUGIN_CACHE="$HOME/.claude/plugins/cache/experimental-plugin-marketplace/db-bri
 COMMANDS_DIR="$HOME/.claude/commands"
 ORG="databricks-eng"
 
-printf "\n${BLU}Bricksearch installer${RST}\n"
-printf "${DIM}Installs db-bricksearch plugin + /bricksearch command${RST}\n\n"
+printf "\n${BLU}Bricksearch setup${RST}\n"
+printf "${DIM}Installs or updates db-bricksearch plugin + /bricksearch command${RST}\n\n"
 
 # ---------------------------------------------------------------------------
 # 1. Prerequisites
@@ -59,51 +63,29 @@ fi
 # ---------------------------------------------------------------------------
 step "Verifying GitHub access to ${ORG} org"
 
-# Returns 0 if the given gh account has active membership in $ORG.
-# Switches the active gh account to $1 as a side effect.
-check_org_membership() {
-    local acct="$1"
-    gh auth switch --user "$acct" >/dev/null 2>&1 || return 1
-    gh api "user/memberships/orgs/${ORG}" --jq '.state' 2>/dev/null | grep -q active
-}
-
 if [ "$HAS_GH" = "1" ]; then
     if ! gh auth status >/dev/null 2>&1; then
         fail "gh is not authenticated."
         printf "\n${DIM}Run:${RST}\n  gh auth login\n${DIM}Select: GitHub.com -> HTTPS -> login with a browser.${RST}\n"
         printf "${DIM}Use the GitHub account linked to your @databricks.com SSO.${RST}\n\n"
-        die "Re-run this installer after gh auth succeeds."
+        die "Re-run setup after gh auth succeeds."
     fi
 
-    ORIGINAL_ACTIVE=$(gh api user --jq .login 2>/dev/null || echo "")
-    TARGET=""
+    # Use whichever account is currently active. If you have multiple gh
+    # accounts and the wrong one is active, this will fail loudly with the
+    # account name so you know which one to switch.
+    ACTIVE_ACCOUNT=$(gh api user --jq .login 2>/dev/null || echo "(unknown)")
 
-    # Fast path: active account already has access (most users hit this)
-    if [ -n "$ORIGINAL_ACTIVE" ] && check_org_membership "$ORIGINAL_ACTIVE"; then
-        TARGET="$ORIGINAL_ACTIVE"
-    else
-        # Fallback: iterate every other authenticated account
-        for ACCT in $(gh auth status 2>&1 | grep -oE 'github\.com account [^ ]+' | awk '{print $3}'); do
-            [ "$ACCT" = "$ORIGINAL_ACTIVE" ] && continue
-            if check_org_membership "$ACCT"; then
-                TARGET="$ACCT"
-                break
-            fi
-        done
+    if ! gh api "user/memberships/orgs/${ORG}" --jq '.state' 2>/dev/null | grep -q active; then
+        fail "Setup tried to use GitHub account '${ACTIVE_ACCOUNT}' — it is not an active member of '${ORG}'."
+        printf "\n${DIM}If you have a Databricks-linked GitHub account, switch to it and re-run:${RST}\n"
+        printf "  gh auth switch --user <your-databricks-account>\n"
+        printf "${DIM}Or authorize SSO for '${ACTIVE_ACCOUNT}': https://github.com/orgs/${ORG}/sso${RST}\n"
+        printf "${DIM}If you don't have ${ORG} access at all, request it via the internal Databricks GitHub-org-access process.${RST}\n\n"
+        die "Cannot reach the internal marketplace without ${ORG} membership."
     fi
 
-    if [ -z "$TARGET" ]; then
-        fail "None of your authenticated GitHub accounts are active members of '${ORG}'."
-        printf "\n${DIM}Authenticated accounts:${RST}\n"
-        gh auth status 2>&1 | grep -oE 'github\.com account [^ ]+' | awk '{print "  - " $3}'
-        printf "\n${DIM}Request membership via the internal Databricks GitHub-org-access process.${RST}\n"
-        printf "${DIM}If you joined recently, authorize SSO: https://github.com/orgs/${ORG}/sso${RST}\n\n"
-        [ -n "$ORIGINAL_ACTIVE" ] && gh auth switch --user "$ORIGINAL_ACTIVE" >/dev/null 2>&1 || true
-        die "Cannot reach the internal marketplace without org membership."
-    fi
-
-    ok "GitHub account '${TARGET}' verified as ${ORG} member"
-    [ "$TARGET" != "$ORIGINAL_ACTIVE" ] && warn "Active gh account temporarily switched to '${TARGET}' for install."
+    ok "GitHub account '${ACTIVE_ACCOUNT}' verified as ${ORG} member"
 
     # Make sure git knows how to use gh for https clones
     gh auth setup-git >/dev/null 2>&1 || true
@@ -217,13 +199,6 @@ printf "\n${GRN}✓ Bricksearch installed successfully.${RST}\n\n"
 printf "  Marketplace: ${DIM}${MARKETPLACE_DIR}${RST}\n"
 printf "  Plugin:      ${DIM}${LATEST}${RST}\n"
 printf "  Command:     ${DIM}${COMMANDS_DIR}/bricksearch.md${RST}\n\n"
-
-# Restore original active gh account if install changed it
-if [ -n "${TARGET:-}" ] && [ -n "${ORIGINAL_ACTIVE:-}" ] && [ "$TARGET" != "$ORIGINAL_ACTIVE" ]; then
-    if gh auth switch --user "$ORIGINAL_ACTIVE" >/dev/null 2>&1; then
-        printf "${DIM}Restored active gh account to '${ORIGINAL_ACTIVE}'.${RST}\n\n"
-    fi
-fi
 
 printf "${BLU}Next steps${RST}\n"
 printf "  1. Start a ${BLU}new${RST} isaac session (existing sessions won't pick up the command).\n"
