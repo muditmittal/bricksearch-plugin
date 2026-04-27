@@ -404,7 +404,7 @@
         </div>
     </div>
     <h1>Ask a question.<br><em>Get a research doc.</em></h1>
-    <p class="hero-sub">Multi-agent research across internal intel, customer signal, competitive landscape, and quantitative data — verified by DBRA and curated Genie Spaces — synthesized into a shareable Google Doc.</p>
+    <p class="hero-sub">Multi-agent research across internal intel, customer signal, competitive landscape, and quantitative data — backed by curated Genie Spaces and Logfood SQL — synthesized into a shareable Google Doc.</p>
     <div style="display:flex; flex-direction:column; gap:1rem; align-items:center; width:100%; max-width:680px; margin:0 auto;">
         <div style="font-size:0.72rem; color:var(--text-muted); margin-bottom:-0.3rem;">One-time setup — run these three commands in terminal:</div>
         <div class="hero-install" onclick="copyClone(this)" style="width:100%; justify-content:space-between;">
@@ -416,7 +416,7 @@
             <span style="color:var(--accent); font-size:0.75rem; font-weight:600; flex-shrink:0; margin-left:1rem;">Copy</span>
         </div>
         <div class="hero-install" onclick="copyShortcut(this)" style="width:100%; justify-content:space-between;">
-            <div style="text-align:left; word-break:break-all;"><div style="color:var(--text-muted); font-family:-apple-system,sans-serif; font-size:0.7rem; margin-bottom:0.3rem;">Create /bricksearch command</div><span class="ck">cp</span> ~/.claude/plugins/cache/experimental-plugin-marketplace/db-bricksearch/*/commands/bricksearch.md ~/.claude/commands/</div>
+            <div style="text-align:left; word-break:break-all;"><div style="color:var(--text-muted); font-family:-apple-system,sans-serif; font-size:0.7rem; margin-bottom:0.3rem;">Create /bricksearch command</div><span class="ck">mkdir -p</span> ~/.claude/commands &amp;&amp; <span class="ck">cp</span> ~/.claude/plugins/cache/experimental-plugin-marketplace/db-bricksearch/*/commands/bricksearch.md ~/.claude/commands/</div>
             <span style="color:var(--accent); font-size:0.75rem; font-weight:600; flex-shrink:0; margin-left:1rem;">Copy</span>
         </div>
         <div style="font-size:0.65rem; color:var(--text-muted); margin-top:-0.3rem;">Already installed? Run <code style="font-family:var(--mono); color:var(--accent); font-size:0.65rem;">isaac plugin update</code> to get the latest version</div>
@@ -433,16 +433,16 @@
 <section>
     <div class="section-label">Step 1</div>
     <h2>Question triggers multi-agent searches</h2>
-    <p class="section-desc">Bricksearch breaks your question into targeted sub-queries, confirms the plan with you, then dispatches specialized agents in parallel. Each covers a distinct source domain — from internal Logfood data and customer notes to competitor docs and academic standards. DBRA runs alongside for independent quantitative verification. Every agent follows a strict source protocol: nothing is silently skipped.</p>
+    <p class="section-desc">Bricksearch breaks your question into targeted sub-queries, confirms the plan with you, then dispatches specialized agents in parallel — each runs in the background so you see findings stream in as agents complete, not at the end. Agents cover distinct source domains under strict source ownership: no two agents query the same source, nothing is silently skipped. The Quantitative agent uses four curated Genie Spaces (28 metric views across governance, compute, performance, and AI governance) and falls back to direct Logfood SQL when needed. Image Research runs in parallel for competitive screenshots and visual evidence.</p>
     <div class="table-wrap">
     <table class="agent-table">
         <thead>
             <tr><th>Agent</th><th>Covers</th><th>Known bias</th></tr>
         </thead>
         <tbody>
-            <tr><td>DBRA</td><td>Autonomous Logfood SQL via Databricks Research Agent — runs twice (dispatch + verification)</td><td>May hallucinate table names</td></tr>
-            <tr><td>Quantitative</td><td>Curated Genie Spaces, metric views, DBRA, direct SQL — adoption, spend, trends, funnels</td><td>Instrumented features only</td></tr>
-            <tr><td>Internal Intel</td><td>PRDs, UXR archive, PM customer notes, ES tickets, CUJs, prior design work</td><td>Past internal thinking</td></tr>
+            <tr><td>Quantitative</td><td>Curated Genie Spaces (28 metric views), direct Logfood SQL — adoption, spend, trends, funnels</td><td>Instrumented features only</td></tr>
+            <tr><td>Internal Intel</td><td>PRDs, UXR archive, ES tickets, CUJs, prior design work</td><td>Past internal thinking</td></tr>
+            <tr><td>Customer Notes</td><td>go/voices-rag, Voices dashboard, PM customer call summaries, Logfood `data_voices`</td><td>Skews enterprise accounts</td></tr>
             <tr><td>Sales &amp; GTM</td><td>BrickBites, SFDC win/loss, QBR themes, PMM messaging, field playbooks</td><td>Deal-winning narratives</td></tr>
             <tr><td>Roadmap</td><td>Quarterly pre-reads, Aha!, Jira epics, leadership priorities, OKRs</td><td>Formally planned work only</td></tr>
             <tr><td>Competitive</td><td>Battlecards, competitor docs, feature matrices, pricing, UX comparisons</td><td>Databricks-favorable framing</td></tr>
@@ -451,6 +451,7 @@
             <tr><td>Official Docs</td><td>Databricks docs, release notes, blog posts, API references</td><td>Shipped features only</td></tr>
             <tr><td>Product Design</td><td>NNGroup, design systems, competitor UX patterns, accessibility, IA</td><td>UX elegance over feasibility</td></tr>
             <tr><td>Foundations</td><td>Academic papers, W3C/ISO/NIST standards, canonical definitions</td><td>Theoretical</td></tr>
+            <tr><td>Image Research</td><td>Per-competitor parallel screenshot search — competitor docs, product pages, demo videos, G2/TrustRadius</td><td>Only captures public UI</td></tr>
         </tbody>
     </table>
     </div>
@@ -462,7 +463,7 @@
 <section>
     <div class="section-label">Step 2</div>
     <h2>Findings are verified, conflicts resolved</h2>
-    <p class="section-desc">As agents report back, findings are cross-referenced and ranked by authoritativeness. DBRA re-queries Logfood to verify any quantitative claim from a non-authoritative source. Contradictions are resolved — not hidden. Gaps trigger targeted follow-up that you approve before re-dispatch.</p>
+    <p class="section-desc">As agents report back, findings are cross-referenced and ranked by authoritativeness. The Quantitative agent runs a second time as a Data Verification Pass — every quantitative claim from a non-authoritative source gets re-validated against the curated Genie Spaces or direct Logfood SQL. Contradictions are resolved — not hidden. Gaps trigger targeted follow-up that you approve before re-dispatch. Quality gates between every phase boundary catch placeholder leaks, missing citations, and broken hyperlinks before the doc reaches you.</p>
     <p style="font-size: 0.78rem; color: var(--text-dim); margin-bottom: 1rem;">When sources conflict, the higher-ranked source wins:</p>
     <div class="trust">
         <div class="trust-row"><div class="trust-rank">1</div><div class="trust-source">Genie Space metric views + Logfood data</div><div class="trust-why">Curated metrics &amp; observed behavior</div></div>
@@ -538,7 +539,7 @@
 
 <script>
     function copyShortcut(el) {
-        const text = 'cp ~/.claude/plugins/cache/experimental-plugin-marketplace/db-bricksearch/*/commands/bricksearch.md ~/.claude/commands/';
+        const text = 'mkdir -p ~/.claude/commands && cp ~/.claude/plugins/cache/experimental-plugin-marketplace/db-bricksearch/*/commands/bricksearch.md ~/.claude/commands/';
         const label = el.querySelector('span:last-child');
         navigator.clipboard.writeText(text).then(() => {
             label.textContent = 'Copied!';
