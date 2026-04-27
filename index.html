@@ -406,20 +406,28 @@
     <h1>Ask a question.<br><em>Get a research doc.</em></h1>
     <p class="hero-sub">Multi-agent research across internal intel, customer signal, competitive landscape, and quantitative data — backed by curated Genie Spaces and Logfood SQL — synthesized into a shareable Google Doc.</p>
     <div style="display:flex; flex-direction:column; gap:1rem; align-items:center; width:100%; max-width:680px; margin:0 auto;">
-        <div style="font-size:0.72rem; color:var(--text-muted); margin-bottom:-0.3rem;">One-time setup — run these three commands in terminal:</div>
+        <div style="font-size:0.72rem; color:var(--text-muted); margin-bottom:-0.3rem;">First-time install — run these three commands in terminal:</div>
         <div class="hero-install" onclick="copyClone(this)" style="width:100%; justify-content:space-between;">
-            <div style="text-align:left; word-break:break-all;"><div style="color:var(--text-muted); font-family:-apple-system,sans-serif; font-size:0.7rem; margin-bottom:0.3rem;">First-time plugin users</div><span class="ck">git clone</span> https://github.com/databricks-eng/plugin-marketplace.git ~/plugin-marketplace</div>
+            <div style="text-align:left; word-break:break-all;"><div style="color:var(--text-muted); font-family:-apple-system,sans-serif; font-size:0.7rem; margin-bottom:0.3rem;">Clone the marketplace</div><span class="ck">git clone</span> https://github.com/databricks-eng/plugin-marketplace.git ~/plugin-marketplace</div>
             <span style="color:var(--accent); font-size:0.75rem; font-weight:600; flex-shrink:0; margin-left:1rem;">Copy</span>
         </div>
         <div class="hero-install" onclick="copyInstall(this)" style="width:100%; justify-content:space-between; border:2px solid var(--accent);">
-            <div style="text-align:left;"><div style="color:var(--text-muted); font-family:-apple-system,sans-serif; font-size:0.7rem; margin-bottom:0.3rem;">Install plugin</div><span class="ck">isaac plugin add</span> db-bricksearch@experimental</div>
+            <div style="text-align:left;"><div style="color:var(--text-muted); font-family:-apple-system,sans-serif; font-size:0.7rem; margin-bottom:0.3rem;">Install the plugin</div><span class="ck">isaac plugin add</span> db-bricksearch@experimental</div>
             <span style="color:var(--accent); font-size:0.75rem; font-weight:600; flex-shrink:0; margin-left:1rem;">Copy</span>
         </div>
         <div class="hero-install" onclick="copyShortcut(this)" style="width:100%; justify-content:space-between;">
-            <div style="text-align:left; word-break:break-all;"><div style="color:var(--text-muted); font-family:-apple-system,sans-serif; font-size:0.7rem; margin-bottom:0.3rem;">Create /bricksearch command</div><span class="ck">mkdir -p</span> ~/.claude/commands &amp;&amp; <span class="ck">cp</span> ~/.claude/plugins/cache/experimental-plugin-marketplace/db-bricksearch/*/commands/bricksearch.md ~/.claude/commands/</div>
+            <div style="text-align:left; word-break:break-all;"><div style="color:var(--text-muted); font-family:-apple-system,sans-serif; font-size:0.7rem; margin-bottom:0.3rem;">Register /bricksearch command</div><span class="ck">mkdir -p</span> ~/.claude/commands &amp;&amp; <span class="ck">cp</span> ~/.claude/plugins/cache/experimental-plugin-marketplace/db-bricksearch/*/commands/bricksearch.md ~/.claude/commands/</div>
             <span style="color:var(--accent); font-size:0.75rem; font-weight:600; flex-shrink:0; margin-left:1rem;">Copy</span>
         </div>
-        <div style="font-size:0.65rem; color:var(--text-muted); margin-top:-0.3rem;">Already installed? Run <code style="font-family:var(--mono); color:var(--accent); font-size:0.65rem;">isaac plugin update</code> to get the latest version</div>
+        <div style="font-size:0.72rem; color:var(--text-muted); margin-top:1.2rem; margin-bottom:-0.3rem;">Already installed? Update with these two:</div>
+        <div class="hero-install" onclick="copyUpdate(this)" style="width:100%; justify-content:space-between;">
+            <div style="text-align:left; word-break:break-all;"><div style="color:var(--text-muted); font-family:-apple-system,sans-serif; font-size:0.7rem; margin-bottom:0.3rem;">Refresh marketplace + plugin</div><span class="ck">git -C</span> ~/plugin-marketplace <span class="ck">pull</span> --ff-only &amp;&amp; <span class="ck">isaac plugin update</span></div>
+            <span style="color:var(--accent); font-size:0.75rem; font-weight:600; flex-shrink:0; margin-left:1rem;">Copy</span>
+        </div>
+        <div class="hero-install" onclick="copyShortcut(this)" style="width:100%; justify-content:space-between;">
+            <div style="text-align:left; word-break:break-all;"><div style="color:var(--text-muted); font-family:-apple-system,sans-serif; font-size:0.7rem; margin-bottom:0.3rem;">Refresh /bricksearch command</div><span class="ck">mkdir -p</span> ~/.claude/commands &amp;&amp; <span class="ck">cp</span> ~/.claude/plugins/cache/experimental-plugin-marketplace/db-bricksearch/*/commands/bricksearch.md ~/.claude/commands/</div>
+            <span style="color:var(--accent); font-size:0.75rem; font-weight:600; flex-shrink:0; margin-left:1rem;">Copy</span>
+        </div>
         <div style="font-size:0.92rem; color:var(--text); margin-top:0.5rem;">Then type <code style="font-family:var(--mono); color:var(--accent); font-size:0.92rem; font-weight:600;">/bricksearch</code> in any Isaac session.</div>
     </div>
     <div style="max-width:680px; margin:2.5rem auto 0; padding:1rem 1.5rem; border:1px solid var(--border-bright); border-radius:10px; background:var(--card);">
@@ -540,6 +548,28 @@
 <script>
     function copyShortcut(el) {
         const text = 'mkdir -p ~/.claude/commands && cp ~/.claude/plugins/cache/experimental-plugin-marketplace/db-bricksearch/*/commands/bricksearch.md ~/.claude/commands/';
+        const label = el.querySelector('span:last-child');
+        navigator.clipboard.writeText(text).then(() => {
+            label.textContent = 'Copied!';
+            label.style.color = '#22c55e';
+            setTimeout(() => { label.textContent = 'Copy'; label.style.color = ''; }, 2000);
+        }).catch(() => {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            label.textContent = 'Copied!';
+            label.style.color = '#22c55e';
+            setTimeout(() => { label.textContent = 'Copy'; label.style.color = ''; }, 2000);
+        });
+    }
+
+    function copyUpdate(el) {
+        const text = 'git -C ~/plugin-marketplace pull --ff-only && isaac plugin update';
         const label = el.querySelector('span:last-child');
         navigator.clipboard.writeText(text).then(() => {
             label.textContent = 'Copied!';
